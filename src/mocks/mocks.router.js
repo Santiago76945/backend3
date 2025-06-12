@@ -8,22 +8,93 @@ import { faker } from '@faker-js/faker';
 
 export const mocksRouter = express.Router();
 
-// 1. Generar 50 usuarios mock (no se guardan en DB)
+/**
+ * @swagger
+ * tags:
+ *   name: Mocks
+ *   description: Endpoints para generación y gestión de datos mock
+ */
+
+/**
+ * @swagger
+ * /api/mocks/mockingusers:
+ *   get:
+ *     summary: Generar 50 usuarios mock (no persistidos)
+ *     tags: [Mocks]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios mock generados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 payload:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       first_name:
+ *                         type: string
+ *                       last_name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       password:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *                       pets:
+ *                         type: array
+ *                         items: {}
+ */
 mocksRouter.get('/mockingusers', (req, res) => {
     const users = generateUsers(50);
     res.json({ status: 'success', payload: users });
 });
 
-// 2. Insertar en DB la cantidad de usuarios y mascotas indicados
+/**
+ * @swagger
+ * /api/mocks/generateData:
+ *   post:
+ *     summary: Insertar en DB la cantidad indicada de usuarios y mascotas
+ *     tags: [Mocks]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               users:
+ *                 type: integer
+ *                 example: 10
+ *               pets:
+ *                 type: integer
+ *                 example: 5
+ *     responses:
+ *       200:
+ *         description: Cantidad creada de usuarios y mascotas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ */
 mocksRouter.post('/generateData', async (req, res) => {
     const { users = 0, pets = 0 } = req.body;
 
     try {
-        // Generar e insertar usuarios
         const generatedUsers = generateUsers(users);
         const createdUsers = await User.insertMany(generatedUsers);
 
-        // Generar e insertar mascotas
         const generatedPets = [];
         for (let i = 0; i < pets; i++) {
             generatedPets.push({
@@ -43,7 +114,34 @@ mocksRouter.post('/generateData', async (req, res) => {
     }
 });
 
-// 3. Generar 100 mascotas mock (no se guardan en DB)
+/**
+ * @swagger
+ * /api/mocks/mockingpets:
+ *   get:
+ *     summary: Generar 100 mascotas mock (no persistidas)
+ *     tags: [Mocks]
+ *     responses:
+ *       200:
+ *         description: Lista de mascotas mock generadas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 payload:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       type:
+ *                         type: string
+ *                       age:
+ *                         type: integer
+ */
 mocksRouter.get('/mockingpets', (req, res) => {
     const pets = [];
     for (let i = 0; i < 100; i++) {
@@ -56,7 +154,27 @@ mocksRouter.get('/mockingpets', (req, res) => {
     res.json({ status: 'success', payload: pets });
 });
 
-// 4. Consultar todos los usuarios guardados en DB
+/**
+ * @swagger
+ * /api/mocks/users:
+ *   get:
+ *     summary: Consultar todos los usuarios guardados en la DB
+ *     tags: [Mocks]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios persistidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ */
 mocksRouter.get('/users', async (req, res) => {
     try {
         const users = await User.find();
@@ -66,7 +184,27 @@ mocksRouter.get('/users', async (req, res) => {
     }
 });
 
-// 5. Consultar todas las mascotas guardadas en DB
+/**
+ * @swagger
+ * /api/mocks/pets:
+ *   get:
+ *     summary: Consultar todas las mascotas guardadas en la DB
+ *     tags: [Mocks]
+ *     responses:
+ *       200:
+ *         description: Lista de mascotas persistidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 pets:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Pet'
+ */
 mocksRouter.get('/pets', async (req, res) => {
     try {
         const pets = await Pet.find();

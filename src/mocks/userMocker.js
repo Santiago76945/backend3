@@ -3,6 +3,11 @@
 import { faker } from '@faker-js/faker';
 import bcrypt from 'bcrypt';
 
+/**
+ * Genera un array de usuarios falsos para testing.
+ * @param {number} count - Cantidad de usuarios a generar.
+ * @returns {Array<Object>} Array de objetos usuario.
+ */
 export const generateUsers = (count = 50) => {
     const users = [];
 
